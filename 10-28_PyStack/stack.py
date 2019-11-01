@@ -39,6 +39,18 @@ class SinglyLinkedList:
         # the current number of nodes in the list
         self._size = 0
 
+    # create a "private" method to get a node at an index
+    def _get_node_at(self, index):
+        follow = self._begin
+
+        # don't allow indexing outside of the bounds of the list
+        index = index % self.size()
+
+        for _ in range(index - 1):
+            follow = follow.get_next()
+
+        return follow
+
     # add an item to the end of the list
     def add(self, value):
         new_node = Node(val=item)
@@ -76,11 +88,7 @@ class SinglyLinkedList:
     # add a node at the given index
     def add_at(self, value, index):
         new_node = Node(val=value)
-        follow = self._begin
-
-        # traverse the list, stopping at the node before the desired index
-        for _ in range(index - 2):
-            follow = follow.get_next()
+        follow = self._get_node_at(index - 1)
 
         # set the new node to point to the node currently at the desired index
         new_node.set_next(follow.get_next())
@@ -93,11 +101,7 @@ class SinglyLinkedList:
 
     # remove the node at the given index
     def remove_at(self, index):
-        follow = self._begin
-
-        # traverse the list, stopping at the node before the desired index
-        for _ in range(index - 2):
-            follow = follow.get_next()
+        follow = self._get_node_at(index - 1)
 
         # set the current node to skip over the node to be deleted. python's
         # garbage collection will handle the rest for us
@@ -108,15 +112,10 @@ class SinglyLinkedList:
 
     # return the value at the desired index
     def get_at(self, index):
-        follow = self._begin
-
-        # don't allow indexing outside of the bounds of the list
-        index = index % self.size()
-
-        for _ in range(index - 1):
-            follow = follow.get_next()
-
+        follow = self._get_node_at(index)
         return follow.get_val()
+
+    def change_val(self, )
 
 class Stack:
     # allow the stack to be initialized with or without a top value
