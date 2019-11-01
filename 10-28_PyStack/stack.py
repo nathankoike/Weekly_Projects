@@ -91,6 +91,21 @@ class SinglyLinkedList:
         # lastly, increment the size of the list to reflect this change
         self._size += 1
 
+    # remove the node at the given index
+    def remove_at(self, index):
+        follow = self._begin
+
+        # traverse the list, stopping at the node before the desired index
+        for _ in range(index - 2):
+            follow = follow.get_next()
+
+        # set the current node to skip over the node to be deleted. python's
+        # garbage collection will handle the rest for us
+        follow.set_next(follow.get_next())
+
+        # lastly, decrement the size of the list to reflect this change
+        self._size -= 1
+
 class Stack:
     # allow the stack to be initialized with or without a top value
     def __init__(self, top=None):
