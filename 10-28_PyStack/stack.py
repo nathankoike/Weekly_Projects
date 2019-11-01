@@ -120,6 +120,9 @@ class SinglyLinkedList:
         follow = self._get_node_at(index)
         follow.set_val(value)
 
+    def size(self):
+        return self._size
+
 class Stack:
     # allow the stack to be initialized with or without a top value
     def __init__(self, top=None):
