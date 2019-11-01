@@ -106,6 +106,18 @@ class SinglyLinkedList:
         # lastly, decrement the size of the list to reflect this change
         self._size -= 1
 
+    # return the value at the desired index
+    def get_at(self, index):
+        follow = self._begin
+
+        # don't allow indexing outside of the bounds of the list
+        index = index % self.size()
+
+        for _ in range(index - 1):
+            follow = follow.get_next()
+
+        return follow.get_val()
+
 class Stack:
     # allow the stack to be initialized with or without a top value
     def __init__(self, top=None):
