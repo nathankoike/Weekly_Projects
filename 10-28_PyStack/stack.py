@@ -8,7 +8,7 @@ Desc: create a module to implement a stack in python using both lists and nodes
 class Node:
     # allow a node to be made without any data
     def __init__(self, val=None, next=None):
-        self._value = value # the data in the node
+        self._value = val # the data in the node
         self._next = next # the next node
 
     # set the value of this node
@@ -39,6 +39,25 @@ class Stack:
 
         # set the top of the stack to reflect this new addition
         self._top = new_node
+
+    def top(self):
+        if self.empty():
+            return None
+
+        return self._top.get_val()
+
+    def pop(self):
+        if self.empty():
+            return
+
+        # set the top to point to the node immediately following this one
+        # we don't need to do more than this because python's garbage collection
+        # will clean up the pointers for us
+        self._top = self._top.get_next()
+
+    def empty(self):
+        # check to see if the top pointer is null
+        return self._top == None
 
 # a list-based stack implementation
 class L_Stack:

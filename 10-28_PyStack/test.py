@@ -7,7 +7,7 @@ Desc: test code for the stack
 import stack
 
 def main():
-    St = stack.L_Stack()
+    St = stack.Stack()
 
     St.push(1)
 
