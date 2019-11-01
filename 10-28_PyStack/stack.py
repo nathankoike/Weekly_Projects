@@ -14,7 +14,7 @@ class L_Stack:
         self._stack.append(item)
 
     # look at the most recent item in the stack
-    def top():
+    def top(self):
         # if the stack is empty return nothing
         if self.empty():
             return None
@@ -23,15 +23,15 @@ class L_Stack:
         return self._stack[-1]
 
     # remove an item from the stack
-    def pop():
+    def pop(self):
         # if the stack is empty we cannot pop anything
         if self.empty():
             return
 
         # set the stack equal to the slice of itself from the beginning to one
         # value from the top
-        self._stack = self._stack[0:len(self._stack) - 2]
+        self._stack = self._stack[0:len(self._stack) - 1]
 
     # check to see if the stack is empty
-    def empty():
+    def empty(self):
         return len(self._stack) == 0
