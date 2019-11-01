@@ -46,21 +46,26 @@ class SinglyLinkedList:
         # don't allow indexing outside of the bounds of the list
         index = index % self.size()
 
-        for _ in range(index - 1):
+        if index < 1:
+            return follow
+
+        for _ in range(index):
             follow = follow.get_next()
 
         return follow
 
     # add an item to the end of the list
     def add(self, value):
-        new_node = Node(val=item)
+        new_node = Node(val=value)
 
         # if the list is empty
         if not self._begin:
             self._begin = new_node
 
-        # set the node after the last node to be the new node
-        self._end.set_next(new_node)
+        # set the node after the last node to be the new node if there is a node
+        # already in the list
+        if self._end != None:
+            self._end.set_next(new_node)
 
         # update the end pointer to reflect this change
         self._end = new_node
