@@ -39,6 +39,40 @@ class SinglyLinkedList:
         # the current number of nodes in the list
         self._size = 0
 
+    # add an item to the end of the list
+    def add(self, value):
+        new_node = Node(val=item)
+
+        # if the list is empty
+        if not self._begin:
+            self._begin = new_node
+
+        # set the node after the last node to be the new node
+        self._end.set_next(new_node)
+
+        # update the end pointer to reflect this change
+        self._end = new_node
+
+        # lastly increase the size of the list
+        self._size += 1
+
+    # remove the last node in the list
+    def remove(self):
+        follow = self._begin
+
+        # traverse the whole list
+        for _ in range(self.size() - 2):
+            follow = follow.get_next()
+
+        # disconnect the last node
+        follow.set_next(None)
+
+        # update the end pointer to reflect this change
+        self._end = follow
+
+        # lastly, decrement the size of the list
+        self._size -= 1
+
 class Stack:
     # allow the stack to be initialized with or without a top value
     def __init__(self, top=None):
