@@ -73,6 +73,24 @@ class SinglyLinkedList:
         # lastly, decrement the size of the list
         self._size -= 1
 
+    # add a node at the given index
+    def add_at(self, value, index):
+        new_node = Node(val=value)
+        follow = self._begin
+
+        # traverse the list, stopping at the node before the desired index
+        for _ in range(index - 2):
+            follow = follow.get_next()
+
+        # set the new node to point to the node currently at the desired index
+        new_node.set_next(follow.get_next())
+
+        # set the node before the desired index to point to the new node
+        follow.set_next(new_node)
+
+        # lastly, increment the size of the list to reflect this change
+        self._size += 1
+
 class Stack:
     # allow the stack to be initialized with or without a top value
     def __init__(self, top=None):
