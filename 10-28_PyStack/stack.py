@@ -27,6 +27,18 @@ class Node:
     def get_next(self):
         return self._next
 
+# a list but each node only points in one direction
+class SinglyLinkedList:
+    def __init__(self):
+        # the pointer to the beginning of the list
+        self._begin = None
+
+        # the pointer to the end of the list
+        self._end = None
+
+        # the current number of nodes in the list
+        self._size = 0
+
 class Stack:
     # allow the stack to be initialized with or without a top value
     def __init__(self, top=None):
