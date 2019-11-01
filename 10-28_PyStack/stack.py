@@ -115,7 +115,10 @@ class SinglyLinkedList:
         follow = self._get_node_at(index)
         return follow.get_val()
 
-    def change_val(self, )
+    # change the value at the given index to the value provided
+    def change_val(self, index, value):
+        follow = self._get_node_at(index)
+        follow.set_val(value)
 
 class Stack:
     # allow the stack to be initialized with or without a top value
