@@ -33,13 +33,16 @@ def main():
     ls.add(1)
     ls.add(3)
     ls.add(5)
-    print(ls.get_at(0)) # should be 1
-    print(ls.get_at(2)) # should be 5
+    ls.print_list() # should be [1, 3, 5]
+    ls.add_at(0, 0) # should add 0 at index 0
+    print(ls.get_at(0)) # should be 0
+    ls.print_list() # should be [0, 1, 3, 5]
     ls.remove_at(0)
-    print(ls.get_at(0)) # should be 3
+    ls.print_list() # should be [1, 3, 5]
     ls.remove()
-    print(ls.size()) # should be 1
-    print(ls.get_at(0)) # should be 3
+    ls.print_list() # should be [1, 3]
+    ls.add_at(2, 1)
+    ls.print_list() # should be [1, 2, 3]
 
 if __name__ == "__main__":
     main()

@@ -75,6 +75,9 @@ class SinglyLinkedList:
 
     # remove the last node in the list
     def remove(self):
+        if self.size() == 0:
+            return
+
         follow = self._begin
 
         # traverse the whole list
@@ -95,6 +98,15 @@ class SinglyLinkedList:
         new_node = Node(val=value)
         follow = self._get_node_at(index - 1)
 
+        # handle adding a node at the beginning
+        if index % self.size() == 0:
+            new_node.set_next(self._begin)
+            self._begin = new_node
+
+            # increment the size
+            self._size += 1
+            return
+
         # set the new node to point to the node currently at the desired index
         new_node.set_next(follow.get_next())
 
@@ -106,6 +118,18 @@ class SinglyLinkedList:
 
     # remove the node at the given index
     def remove_at(self, index):
+        if self.size() == 0:
+            return
+
+        # handle removing the first node
+        if index % self.size() == 0:
+            self._begin = self._begin.get_next()
+
+            # decrement the size
+            self._size -= 1
+
+            return
+
         follow = self._get_node_at(index - 1)
 
         # set the current node to skip over the node to be deleted. python's
@@ -127,6 +151,23 @@ class SinglyLinkedList:
 
     def size(self):
         return self._size
+
+    def print_list(self):
+        if self.size() == 0:
+            print("[]")
+            return
+
+        print('[', end='')
+        print(self._begin.get_val(), end='')
+
+        follow = self._begin.get_next()
+
+        for _ in range(self.size() - 1):
+            print(", ", end='')
+            print(follow.get_val(), end='')
+            follow = follow.get_next()
+
+        print(']')
 
 class Stack:
     # allow the stack to be initialized with or without a top value
