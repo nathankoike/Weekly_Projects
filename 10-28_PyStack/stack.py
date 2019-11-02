@@ -169,6 +169,22 @@ class SinglyLinkedList:
 
         print(']')
 
+class SLL_Stack:
+    def __init__(self):
+        self._stack = SinglyLinkedList()
+
+    def push(self, val):
+        self._stack.add(val)
+
+    def pop(self):
+        self._stack.remove()
+
+    def top(self):
+        return self._stack.get_at(-1)
+
+    def empty(self):
+        return self._stack.size() == 0
+
 class Stack:
     # allow the stack to be initialized with or without a top value
     def __init__(self, top=None):
