@@ -28,3 +28,8 @@ Larger projects might take more than a week to finish. In that case, I will not
 have a finished project, but I will likely still have a few commits. I may also
 choose to skip a week to be with family or to settle into wherever it is that
 I'll be living next semester.
+
+A project may seem large at first, but I may develop an easier way to do it
+later. In that case, the project still counts as a large project because of the
+initial perceived difficulty; I don't really have any way of knowing how
+difficult something is going to be until I do it.
