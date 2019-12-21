@@ -27,6 +27,7 @@ var DATA = [];
 
 // get data from Dark Sky on the given date
 function getWeather(weatherURL) {
+  console.log(weatherURL);
   request({ url: weatherURL, json: true }, function(err, res) {
     stats = res.body.daily.data[0];
     DATA.push(stats);
@@ -43,10 +44,10 @@ function getDate(date) {
   var splitDate = date.split("/");
 
   // add add the values so it reads -[MM]-[DD]correct
-  for (let i = 0; i < splitDate.length; i++) {
+  for (let i = splitDate.length - 1; i >= 0; i--) {
     // add a leading zero to the term if necessary
     correct =
-      date[i].length < 2
+      splitDate[i].length < 2
         ? "0" + splitDate[i] + correct
         : splitDate[i] + correct;
 
@@ -157,8 +158,8 @@ function main() {
         console.log("The predicted precipitation chance is:", PREDICTED[2]);
         console.log();
       }, 0);
-    }, 150);
-  }, 125);
+    }, 300);
+  }, 300);
 }
 
 main();
