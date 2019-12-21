@@ -27,10 +27,10 @@ var DATA = [];
 
 // get data from Dark Sky on the given date
 function getWeather(weatherURL) {
-  console.log(weatherURL);
   request({ url: weatherURL, json: true }, function(err, res) {
     stats = res.body.daily.data[0];
     DATA.push(stats);
+    // console.log(weatherURL); // this is for debugging purposes
   });
 }
 
@@ -129,6 +129,8 @@ function main() {
 
       // sum all of the daily highs and lows
       for (let i = 0; i < DATA.length; i++) {
+        // console.log("high:", parseFloat(DATA[i].temperatureHigh)); // debugging code
+        // console.log("low:", parseFloat(DATA[i].temperatureLow)); // debugging code
         high += parseFloat(DATA[i].temperatureHigh);
         low += parseFloat(DATA[i].temperatureLow);
       }
@@ -158,8 +160,8 @@ function main() {
         console.log("The predicted precipitation chance is:", PREDICTED[2]);
         console.log();
       }, 0);
-    }, 300);
-  }, 300);
+    }, 500);
+  }, 500);
 }
 
 main();
