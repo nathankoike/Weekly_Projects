@@ -6,7 +6,9 @@ Desc: predict future weather patterns in a city based on past data. this is
 
 Note: this is currently just a terminal application, but i might build an HTML
       interface later
-      to run this program use "node weather [weatherKey] [geocodeKey] [city]"
+
+      to run this program use the following
+      "node weather [weatherKey] [geocodeKey] [city] [MM/DD]"
 */
 
 const request = require("request");
@@ -14,25 +16,11 @@ const request = require("request");
 // the base url that we will modify for weather requests
 const WEATHER = "https://api.darksky.net/forecast/";
 
-var weatherKey; // this will be the key to access the weather api
-
 // the base url that we will modify for location requests
 const LATLNG = "http://www.mapquestapi.com/geocoding/v1/address?key=";
 
+var weatherKey; // this will be the key to access the weather api
 var geocodeKey; // this will be the key to access the geocoding api
-
-var COORDS;
-var PREDICTED;
-var DATA = [];
-
-// get data from Dark Sky on the given date
-function getWeather(weatherURL) {
-  request({ url: weatherURL, json: true }, function(err, res) {
-    stats = res.body.daily.data[0];
-    DATA.push(stats);
-    // console.log(weatherURL); // this is for debugging purposes
-  });
-}
 
 // convert the date into the stem of the correct format
 // return [MM]-[DD]T00:00:00
@@ -58,10 +46,85 @@ function getDate(date) {
   return correct;
 }
 
+function makePrediction(data) {
+  // the average high temperature
+  var high = 0;
+
+  // the average low temperature
+  var low = 0;
+
+  // the average precipitation chance
+  var precip = 0;
+
+  // sum all of the daily highs, lows, and precipitation chance
+  for (let i = 0; i < data.length; i++) {
+    // console.log("high:", parseFloat(data[i].temperatureHigh)); // debugging code
+    // console.log("low:", parseFloat(data[i].temperatureLow)); // debugging code
+    // console.log("low:", parseFloat(data[i].precipProbability)); // debugging code
+
+    high += parseFloat(data[i].temperatureHigh);
+    low += parseFloat(data[i].temperatureLow);
+    precip += parseFloat(data[i].precipProbability);
+  }
+
+  // divide for the averages and round for neatness
+  high = high / data.length;
+  low = low / data.length;
+  precip = precip / data.length;
+
+  // get the general rate of change for each prediction
+  let rocHigh =
+    (parseFloat(data[data.length - 1].temperatureHigh) -
+      parseFloat(data[0].temperatureHigh)) /
+    data.length;
+  let rocLow =
+    (parseFloat(data[data.length - 1].temperatureLow) -
+      parseFloat(data[0].temperatureLow)) /
+    data.length;
+  let rocPrecip =
+    (parseFloat(data[data.length - 1].precipProbability) -
+      parseFloat(data[0].precipProbability)) /
+    data.length;
+
+  // add the rates of change to the predictions
+  high = Math.round(high + rocHigh);
+  low = Math.round(low + rocLow);
+  precip = Math.round((precip + rocPrecip) * 100);
+
+  // output the data
+  console.log();
+  console.log("          The daily high should be around", high, "degrees");
+  console.log("           The daily low should be around", low, "degrees");
+  console.log("The precipitation chance should be around", precip + "%");
+}
+
+// get data from Dark Sky on the given date
+function getWeather(weatherURL, dateString, year, iterator, data, callback) {
+  // if the iterator is 6, sto psince we have our 5 data points
+  if (iterator > 5) {
+    makePrediction(data);
+    return; // exit this function and the program
+  }
+
+  // get the date for which we need data
+  let fetchDate = year - iterator + dateString;
+
+  // add the date to the url
+  let fetchURL = weatherURL + fetchDate;
+
+  request({ url: fetchURL, json: true }, function(err, res) {
+    stats = res.body.daily.data[0];
+    data.push(stats);
+    // console.log(weatherURL); // this is for debugging purposes
+
+    callback(weatherURL, dateString, year, iterator + 1, data, callback);
+  });
+}
+
 // make a prediction about future weather based on past data
-function makePrediction(key, date) {
+function getData(key, date, coords) {
   // add the key to the url to prepare for data requests
-  var URL = WEATHER + key + "/" + COORDS.lat + "," + COORDS.lng + ",";
+  var URL = WEATHER + key + "/" + coords.lat + "," + coords.lng + ",";
 
   // first, make the date into the correct format
   var dateString = getDate(date);
@@ -69,15 +132,18 @@ function makePrediction(key, date) {
   // get the current year
   var currentYear = new Date().getFullYear();
 
-  // loop through the five years prior to the current one
-  for (let i = 1; i < 6; i++) {
-    let fetchDate = currentYear - i + dateString;
-    getWeather(URL + fetchDate);
-  }
+  // make an array to accep the data
+  var data = [];
+
+  // make the iterator for the recursive for loop
+  let iterator = 1;
+
+  // get the weather data
+  getWeather(URL, dateString, currentYear, iterator, data, getWeather);
 }
 
 // get the latitude and longitude of a city using the MapQuest API
-function getCoords(city, key) {
+function getCoords(city, key, callback) {
   var URL =
     LATLNG +
     key +
@@ -87,14 +153,16 @@ function getCoords(city, key) {
     // disable the map and limit the number of responses to one
     '"},"options":{"thumbMaps":false,"maxResults":"1"}}';
 
-  var latLng;
-
   request({ url: URL, json: true }, function(err, res) {
-    // parse the result to get just the JSON object containing the lat and long
-    // coordinates for the city
-    COORDS = res.body.results[0].locations[0].displayLatLng;
+    // parse the result to get just the JSON object containing the lat and
+    // long coordinates for the city
+    var coords = res.body.results[0].locations[0].displayLatLng;
+    // console.log(coords, "in function"); // prints coords
+    callback(coords); // "return" the coordinates to the next function
   });
 }
+
+// use the data to make a prediction
 
 // the main function that will handle all the processing
 function main() {
@@ -110,58 +178,15 @@ function main() {
   // get the date that the user would like from the command line
   const date = process.argv[5];
 
-  // get the coordinates of the city as a JSON object witt lat and lng
-  getCoords(city, geocodeKey);
+  var predicted;
 
-  // delay the running of code so that we get our coords
-  // (which are returned asynchronously)
-  setTimeout(function() {
-    // get the data for the given date
-    makePrediction(weatherKey, date);
+  // get the coordinates of the city as a JSON object with lat and lng
+  getCoords(city, geocodeKey, function(coords) {
+    // console.log(coords, "are the coords in main"); // debugging code
 
-    // push this even further back in the queue
-    setTimeout(function() {
-      // the average high temperature
-      var high = 0;
-
-      // the average low temperature
-      var low = 0;
-
-      // sum all of the daily highs and lows
-      for (let i = 0; i < DATA.length; i++) {
-        // console.log("high:", parseFloat(DATA[i].temperatureHigh)); // debugging code
-        // console.log("low:", parseFloat(DATA[i].temperatureLow)); // debugging code
-        high += parseFloat(DATA[i].temperatureHigh);
-        low += parseFloat(DATA[i].temperatureLow);
-      }
-
-      // calculate an average for the highs and lows
-      high /= DATA.length;
-      low /= DATA.length;
-
-      // calculate precipitation chance
-      // precipitation chance
-      var precip = 0;
-
-      // sum all of the daily highs and lows
-      for (let i = 0; i < DATA.length; i++) {
-        precip += parseFloat(DATA[i].precipProbability);
-      }
-
-      // calculate an average for the highs and lows
-      precip /= DATA.length;
-
-      // return the results
-      PREDICTED = [high, low, precip];
-      // deal with asynchronicity
-      setTimeout(function() {
-        console.log("\nThe predicted high is:", PREDICTED[0]);
-        console.log("The predicted low is:", PREDICTED[1]);
-        console.log("The predicted precipitation chance is:", PREDICTED[2]);
-        console.log();
-      }, 0);
-    }, 500);
-  }, 500);
+    // make a prediction
+    getData(weatherKey, date, coords);
+  });
 }
 
 main();
